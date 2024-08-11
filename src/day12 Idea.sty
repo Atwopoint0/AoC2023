@@ -1,0 +1,34 @@
+Day12b Idea
+ 
+Block mapping process:
+ 
+A consecutive string of broken springs will be known as a block. We must assign each block a location within the a sequence of springs, which are: broken, unbroken and unknown.
+ 
+.#.###.#.###### 1,3,1,6
+.dddddda.#c#bbb
+ 
+This is not a valid solution because of additional constraints. We need to validify which solution are legal.Four conditions need to be satisfied:
+ 
+1. Blocks are not too close - (adjacent) blocks cannot overlap which each other and they are separated by at least one spring
+2. Blocks are not too far - between adjacent blocks must not habit a broken spring and we cannot breach the beginning and end of the sequence.
+3. Blocks are placed in order.
+4. Blocks cannot overlap a unbroken spring.
+ 
+The problem is to count the number of valid block mappings, given a sequence of springs and a sequence of blocks. Start by considering block mappings without the conditions 1-4.
+ 
+Local constraints: firstly, condition 1 will bound the indices where the block can appear. (See nonograms). Condition 4 obviously implies the area in the string covered by a block cannot contain unbroken springs. Combining these conditions will give a set of locations which are valid FOR THAT BLOCK IN ISOLATION. (One could also bound these locations further by considering adjacent blocks.)
+This process defines a 'valid location set' for each block. The more we prune, the smaller our matrices will become later on.
+ 
+Paired constraints: it is clear that a block placement will affect the validity of other block placements. The moral is to understand that the relationships can be understood purely through ADJACENT blocks due to conditions 1 and 2. This also handly deals with condition 3.
+ 
+Now consider two adjacent blocks A and B. We define the 'adjacent block placement matrix' as the m by n matrix, with m being the size of B's valid location set and n being the size of A's valid location set. The entry at m,n is 1 if both B can be placed at m in the sequence and A can be placed at n in the sequence. (Remember that this is governed by conditions 1 and 2). In other words: Define p(A) as the location of the first broken spring after A. Then the m,n-th entry is 1 if and only if
+ 
+1. m >= n + size(A) + 1;
+2. m <= p(A).
+ 
+To ensure the left and right edges of the sequence is dealt with properly, we define another pair of matrices: a column matrix for the left side and a row matrix. The entries correspond to whether or not an edge block illegally goes out of bounds.
+ 
+Finally, we view these matrices as valance graphs V(A),V(B),V(C),... for each  block (vertex) A,B,C,... (and the left and right limit) - that is two vertices of adjacent blocks are connected if their locations are compatible. A directed graph from the left limit of the graph to the right end of the graph are in bijection with the valid block mappings. 
+ 
+How to compute the number of paths?
+Take the product of all the matrices.
